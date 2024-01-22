@@ -1,8 +1,22 @@
+import { createTodo } from '../../businessLogic/todos.mjs'
+import { createLogger } from '../../utils/logger.mjs'
+import { getUserId } from '../utils.mjs'
 
-export function handler(event) {
-  const newTodo = JSON.parse(event.body)
+const logger = createLogger('http/createTodos.js')
 
-  // TODO: Implement creating a new TODO item
-  return undefined
+export const handler = async (event) => {
+  logger.info('Processing event: ', event)
+  const newTodoBody = JSON.parse(event.body)
+  const userId = getUserId(event)
+  const newTodo = await createTodo(newTodoBody, userId)
+  return {
+    statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true
+    },
+    body: JSON.stringify({
+      item: newTodo
+    })
+  }
 }
-
